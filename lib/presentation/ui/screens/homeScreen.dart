@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:module_14_assignment/data/controller/productController.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
@@ -8,6 +9,124 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
+
+  final ProductController productController = ProductController();
+  void productDialog({String? id,
+  String? name,
+  int ? qty,
+  int? unitPrice,
+  int? totalPrice,
+  String? img}
+  ){
+    TextEditingController productNameController = TextEditingController();
+    TextEditingController productImageController = TextEditingController();
+    TextEditingController productQtyController = TextEditingController();
+    TextEditingController productUnitPriceController = TextEditingController();
+    TextEditingController productTotalPriceController = TextEditingController();
+
+    productNameController.text = name ?? '';
+    productImageController.text = img ?? '';
+    productQtyController.text = qty.toString() ?? '0';
+    productUnitPriceController.text = unitPrice.toString() ?? '0';
+    productTotalPriceController.text = totalPrice.toString() ?? '0';
+    
+    showDialog(context: context,
+     builder: (context){
+      return AlertDialog(
+        title: Text(id == null ? 'Add Product' : 'Update product'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: productNameController,
+              decoration: InputDecoration(
+                labelText: 'Product Name',
+              
+              ),
+              
+            ),
+            TextField(
+              controller: productImageController,
+              decoration: InputDecoration(
+                labelText: 'Product image'
+              ),
+            ),
+            TextField(
+              controller: productQtyController,
+              decoration: InputDecoration(
+                labelText: 'Product Quantity'
+              ),
+            ),
+            TextField(
+              controller: productUnitPriceController,
+              decoration: InputDecoration(
+                labelText: 'Product Unit Price'
+              ),
+            ),
+            TextField(
+              controller: productTotalPriceController,
+              decoration: InputDecoration(
+                labelText: 'Product Total Price'
+              ),
+            ),
+            SizedBox(height: 10,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton(onPressed: (){
+                  Navigator.pop(context);
+                }, child: Text('Cancel')),
+                ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll(Colors.amber)
+                ),  
+                onPressed: (){
+                    
+                      if(id== null ){
+                    productController.createProducts(
+                    productNameController.text,
+                    int.parse(productQtyController.text),
+                    int.parse(productUnitPriceController.text), 
+                    int.parse(productTotalPriceController.text), 
+                    productImageController.text);
+                      }else{
+                    productController.updateProducts(
+                    id,  
+                    productNameController.text,
+                    int.parse(productQtyController.text),
+                    int.parse(productUnitPriceController.text), 
+                    int.parse(productTotalPriceController.text), 
+                    productImageController.text);
+                      }
+                    
+                     fetchData();
+                     setState(() {
+                     });
+                   
+                    Navigator.pop(context);
+                }, child: Text(id == null ? 'Add Product' : 'Update product', style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500
+                ),)),
+              ],
+            ),
+          ],
+        ),
+      );
+     });
+  }
+   Future<void> fetchData() async{
+    productController.fetchProducts();
+    setState(() {
+      
+    });
+   }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchData();
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -24,30 +143,44 @@ class _HomescreenState extends State<Homescreen> {
         ),
 
         body: ListView.builder(
-          itemCount: 10,
+          
+          itemCount: productController.products.length,
           itemBuilder: (context, index){
+            var product = productController.products[index];
           return Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.amber, width: 2
-                ),
-                borderRadius: BorderRadius.circular(10)
-              ),
+            child: Card(
+              shadowColor: Colors.amber,
+              elevation: 3,
               child: ListTile(
-                leading: Image.network('https://imgs.search.brave.com/CAVS6PSSk_g7pS7VUw5Z4Eq5eOJXP2I8yu8VW8_SwLA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/NzFUaHljT0tuU0wu/anBn'),
-                title: Text('Product name'),
+                //leading: Image.network('https://imgs.search.brave.com/CAVS6PSSk_g7pS7VUw5Z4Eq5eOJXP2I8yu8VW8_SwLA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/NzFUaHljT0tuU0wu/anBn',fit: BoxFit.cover),
+                title: Text(product.productName.toString()),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                    
-                    Text('Product quantity'),
-                    Text('Product unit price'),
-                    Text('Product total price'),
+                    //Text(product['Img']),
+                    Text('Quantity: ${product.qty}'),
+                    Text('price: \$ ${product.unitPrice} '),
+                    Text('Total Price: \$ ${product.totalPrice}'),
+              
+                    
                   ],
                 ),
-                
+                trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(onPressed: ()=>productDialog(id: product.sId,
+                        name: product.productName,
+                        qty: product.qty,
+                        img: product.img,
+                        unitPrice: product.unitPrice,
+                        totalPrice: product.totalPrice
+                        ), icon: Icon(Icons.edit, color: Colors.blue)),
+                        IconButton(onPressed: ()=>productController.deleteProducts(
+                          product.sId.toString()), icon: Icon(Icons.delete, color: Colors.red)),
+                      ],
+                    ),
               ),
             ),
           );
@@ -56,7 +189,7 @@ class _HomescreenState extends State<Homescreen> {
         floatingActionButton: FloatingActionButton(
         elevation: 5,
         backgroundColor: Colors.amber,
-        onPressed: (){},
+        onPressed: ()=>productDialog(),
         child: Icon(Icons.add, color: Colors.white,),),
       ),
     );
