@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:module_14_assignment/data/controller/productController.dart';
+import 'package:module_14_assignment/presentation/widgets/customCardDesign.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
@@ -26,9 +27,9 @@ class _HomescreenState extends State<Homescreen> {
 
     productNameController.text = name ?? '';
     productImageController.text = img ?? '';
-    productQtyController.text = qty.toString() ?? '0';
-    productUnitPriceController.text = unitPrice.toString() ?? '0';
-    productTotalPriceController.text = totalPrice.toString() ?? '0';
+    productQtyController.text = qty.toString()!= null?  qty.toString() : '0';
+    productUnitPriceController.text = unitPrice  != null ?  unitPrice.toString() : '0';
+    productTotalPriceController.text = totalPrice !=null ? totalPrice.toString() : '0';
     
     showDialog(context: context,
      builder: (context){
@@ -147,43 +148,15 @@ class _HomescreenState extends State<Homescreen> {
           itemCount: productController.products.length,
           itemBuilder: (context, index){
             var product = productController.products[index];
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              shadowColor: Colors.amber,
-              elevation: 3,
-              child: ListTile(
-                //leading: Image.network('https://imgs.search.brave.com/CAVS6PSSk_g7pS7VUw5Z4Eq5eOJXP2I8yu8VW8_SwLA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/NzFUaHljT0tuU0wu/anBn',fit: BoxFit.cover),
-                title: Text(product.productName.toString()),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                   
-                    //Text(product['Img']),
-                    Text('Quantity: ${product.qty}'),
-                    Text('price: \$ ${product.unitPrice} '),
-                    Text('Total Price: \$ ${product.totalPrice}'),
-              
-                    
-                  ],
-                ),
-                trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(onPressed: ()=>productDialog(id: product.sId,
-                        name: product.productName,
-                        qty: product.qty,
-                        img: product.img,
-                        unitPrice: product.unitPrice,
-                        totalPrice: product.totalPrice
-                        ), icon: Icon(Icons.edit, color: Colors.blue)),
-                        IconButton(onPressed: ()=>productController.deleteProducts(
-                          product.sId.toString()), icon: Icon(Icons.delete, color: Colors.red)),
-                      ],
-                    ),
-              ),
-            ),
-          );
+          return CustomCardDesign(
+            product: product,
+             onEdit: ()=>productDialog(id: product.sId, 
+             name: product.productName, 
+             qty: product.qty, 
+             unitPrice: product.unitPrice,
+             totalPrice: product.totalPrice,
+             img: product.img),
+             onDelete: ()=>productController.deleteProducts(product.sId.toString()),);
         }),
 
         floatingActionButton: FloatingActionButton(
