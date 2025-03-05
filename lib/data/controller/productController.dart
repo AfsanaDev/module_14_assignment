@@ -6,7 +6,7 @@ import 'package:module_14_assignment/data/models/utils/urls.dart';
 
 class ProductController {
 
-  List<Data> products = [];
+  late List<Data> products = [];
 
   Future<void> fetchProducts() async{
 
@@ -54,7 +54,7 @@ class ProductController {
 
     try{
 
-      if(response.statusCode == 201){
+      if(response.statusCode == 200){
         fetchProducts();
     }
     }catch(e){

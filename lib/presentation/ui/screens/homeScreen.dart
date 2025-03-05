@@ -1,15 +1,16 @@
+
 import 'package:flutter/material.dart';
 import 'package:module_14_assignment/data/controller/productController.dart';
-import 'package:module_14_assignment/presentation/widgets/customCardDesign.dart';
+import 'package:module_14_assignment/presentation/ui/widgets/customCardDesign.dart';
 
-class Homescreen extends StatefulWidget {
-  const Homescreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<Homescreen> createState() => _HomescreenState();
+  State<HomeScreen> createState() => _HomeScreen();
 }
 
-class _HomescreenState extends State<Homescreen> {
+class _HomeScreen extends State<HomeScreen> {
 
   final ProductController productController = ProductController();
   void productDialog({String? id,
@@ -117,7 +118,7 @@ class _HomescreenState extends State<Homescreen> {
      });
   }
    Future<void> fetchData() async{
-    productController.fetchProducts();
+    await productController.fetchProducts();
     setState(() {
       
     });
