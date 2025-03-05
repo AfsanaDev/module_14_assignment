@@ -118,7 +118,7 @@ class _HomeScreen extends State<HomeScreen> {
      });
   }
    Future<void> fetchData() async{
-    productController.fetchProducts();
+    await productController.fetchProducts();
     setState(() {
       
     });
