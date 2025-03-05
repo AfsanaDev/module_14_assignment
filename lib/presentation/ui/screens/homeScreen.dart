@@ -27,7 +27,7 @@ class _HomescreenState extends State<Homescreen> {
 
     productNameController.text = name ?? '';
     productImageController.text = img ?? '';
-    productQtyController.text = qty.toString()!= null?  qty.toString() : '0';
+    productQtyController.text = qty!= null?  qty.toString() : '0';
     productUnitPriceController.text = unitPrice  != null ?  unitPrice.toString() : '0';
     productTotalPriceController.text = totalPrice !=null ? totalPrice.toString() : '0';
     
@@ -143,8 +143,13 @@ class _HomescreenState extends State<Homescreen> {
           centerTitle: true,
         ),
 
-        body: ListView.builder(
-          
+        body: GridView.builder(
+           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+           crossAxisCount: 2,
+           crossAxisSpacing: 0,
+           mainAxisSpacing: 1,
+           childAspectRatio: 0.8
+            ),
           itemCount: productController.products.length,
           itemBuilder: (context, index){
             var product = productController.products[index];
@@ -156,8 +161,32 @@ class _HomescreenState extends State<Homescreen> {
              unitPrice: product.unitPrice,
              totalPrice: product.totalPrice,
              img: product.img),
-             onDelete: ()=>productController.deleteProducts(product.sId.toString()),);
-        }),
+              onDelete: (){
+              productController.deleteProducts(product.sId.toString()).then((value) {
+                if (value) {
+                  setState(() {
+                    fetchData();
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Product deleted"),
+                      duration: Duration(seconds: 2),
+
+                    ),
+                  );
+                }else{
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Something wrong try again"),
+                      duration: Duration(seconds: 2),
+
+                    ),
+                  );
+                }
+              });
+            },
+          );
+        },),
 
         floatingActionButton: FloatingActionButton(
         elevation: 5,
